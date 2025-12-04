@@ -198,6 +198,7 @@ public:
     KD_TREE ikdtree;
 
     ros::Publisher pubLaserCloudFullRes;
+    ros::Publisher pubLaserCloudFullResBody;
     ros::Publisher pubLaserCloudEffect;
     ros::Publisher pubLaserCloudMap;
     ros::Publisher pubOdomAftMapped;
@@ -294,7 +295,7 @@ public:
     void image_comp_callback(const sensor_msgs::CompressedImageConstPtr &msg);
     void set_image_pose( std::shared_ptr<Image_frame> & image_pose, const StatesGroup & state );
     void publish_camera_odom(std::shared_ptr<Image_frame> & image, double msg_time);
-    void publish_track_img(cv::Mat & img, double frame_cost_time);
+    void publish_track_img(cv::Mat & img, double frame_cost_time, double msg_time);
     void publish_raw_img(cv::Mat & img);
     void publish_track_pts( Rgbmap_tracker & tracker  );
     bool vio_preintegration( StatesGroup & state_in, StatesGroup & state_out, double current_frame_time );
@@ -315,6 +316,7 @@ public:
     R3LIVE()
     {
         pubLaserCloudFullRes = m_ros_node_handle.advertise<sensor_msgs::PointCloud2>("/cloud_registered", 100);
+        pubLaserCloudFullResBody = m_ros_node_handle.advertise<sensor_msgs::PointCloud2>("/cloud_registered_body", 100);
         pubLaserCloudEffect = m_ros_node_handle.advertise<sensor_msgs::PointCloud2>("/cloud_effected", 100);
         pubLaserCloudMap = m_ros_node_handle.advertise<sensor_msgs::PointCloud2>("/Laser_map", 100);
         pubOdomAftMapped = m_ros_node_handle.advertise<nav_msgs::Odometry>("/aft_mapped_to_init", 10);

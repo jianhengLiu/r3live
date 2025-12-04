@@ -219,29 +219,29 @@ void R3LIVE::set_initial_camera_parameter( StatesGroup &state, double *intrinsic
     m_mutex_lio_process.unlock();
 }
 
-void R3LIVE::publish_track_img( cv::Mat &img, double frame_cost_time = -1 )
+void R3LIVE::publish_track_img( cv::Mat &img, double frame_cost_time = -1, double msg_time = -1 )
 {
     cv_bridge::CvImage out_msg;
-    out_msg.header.stamp = ros::Time::now();               // Same timestamp and tf frame as input image
+    out_msg.header.stamp = ros::Time().fromSec( msg_time ); //ros::Time::now();               // Same timestamp and tf frame as input image
     out_msg.encoding = sensor_msgs::image_encodings::BGR8; // Or whatever
     cv::Mat pub_image = img.clone();
-    if ( frame_cost_time > 0 )
-    {
-        char fps_char[ 100 ];
-        sprintf( fps_char, "Per-frame cost time: %.2f ms", frame_cost_time );
-        // sprintf(fps_char, "%.2f ms", frame_cost_time);
+    // if ( frame_cost_time > 0 )
+    // {
+    //     char fps_char[ 100 ];
+    //     sprintf( fps_char, "Per-frame cost time: %.2f ms", frame_cost_time );
+    //     // sprintf(fps_char, "%.2f ms", frame_cost_time);
 
-        if ( pub_image.cols <= 640 )
-        {
-            cv::putText( pub_image, std::string( fps_char ), cv::Point( 30, 30 ), cv::FONT_HERSHEY_COMPLEX, 1, cv::Scalar( 255, 255, 255 ), 2, 8,
-                         0 ); // 640 * 480
-        }
-        else if ( pub_image.cols > 640 )
-        {
-            cv::putText( pub_image, std::string( fps_char ), cv::Point( 30, 50 ), cv::FONT_HERSHEY_COMPLEX, 2, cv::Scalar( 255, 255, 255 ), 2, 8,
-                         0 ); // 1280 * 1080
-        }
-    }
+    //     if ( pub_image.cols <= 640 )
+    //     {
+    //         cv::putText( pub_image, std::string( fps_char ), cv::Point( 30, 30 ), cv::FONT_HERSHEY_COMPLEX, 1, cv::Scalar( 255, 255, 255 ), 2, 8,
+    //                      0 ); // 640 * 480
+    //     }
+    //     else if ( pub_image.cols > 640 )
+    //     {
+    //         cv::putText( pub_image, std::string( fps_char ), cv::Point( 30, 50 ), cv::FONT_HERSHEY_COMPLEX, 2, cv::Scalar( 255, 255, 255 ), 2, 8,
+    //                      0 ); // 1280 * 1080
+    //     }
+    // }
     out_msg.image = pub_image; // Your cv::Mat
     pub_track_img.publish( out_msg );
 }
@@ -496,7 +496,7 @@ void R3LIVE::publish_camera_odom( std::shared_ptr< Image_frame > &image, double 
     nav_msgs::Odometry camera_odom;
     camera_odom.header.frame_id = "world";
     camera_odom.child_frame_id = "/aft_mapped";
-    camera_odom.header.stamp = ros::Time::now(); // ros::Time().fromSec(last_timestamp_lidar);
+    camera_odom.header.stamp = ros::Time().fromSec( msg_time ); //ros::Time::now(); // ros::Time().fromSec(last_timestamp_lidar);
     camera_odom.pose.pose.orientation.x = odom_q.x();
     camera_odom.pose.pose.orientation.y = odom_q.y();
     camera_odom.pose.pose.orientation.z = odom_q.z();
@@ -1244,7 +1244,7 @@ void R3LIVE::service_VIO_update()
         // publish_render_pts( m_pub_render_rgb_pts, m_map_rgb_pts );
         publish_camera_odom( img_pose, message_time );
         // publish_track_img( op_track.m_debug_track_img, display_cost_time );
-        publish_track_img( img_pose->m_raw_img, display_cost_time );
+        publish_track_img( img_pose->m_raw_img, display_cost_time, message_time);
 
         if ( m_if_pub_raw_img )
         {

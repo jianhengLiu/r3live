@@ -964,6 +964,15 @@ int R3LIVE::service_LIO_update()
                 pubLaserCloudFullRes.publish( laserCloudFullRes3 );
             }
 
+            /******* Publish current frame points in body coordinates:  *******/
+            {
+                sensor_msgs::PointCloud2 laserCloudFullResBody;
+                pcl::toROSMsg( *laserCloudFullRes2, laserCloudFullResBody );
+                laserCloudFullResBody.header.stamp.fromSec( Measures.lidar_end_time );
+                laserCloudFullResBody.header.frame_id = "/aft_mapped"; // body frame
+                pubLaserCloudFullResBody.publish( laserCloudFullResBody );
+            }
+
             if ( g_camera_lidar_queue.m_if_have_camera_data || (g_LiDAR_frame_index < 100) ) // append point cloud to global map.
             {
                 static std::vector< double > stastic_cost_time;
@@ -1019,7 +1028,7 @@ int R3LIVE::service_LIO_update()
             geometry_msgs::Quaternion geoQuat = tf::createQuaternionMsgFromRollPitchYaw( euler_cur( 0 ), euler_cur( 1 ), euler_cur( 2 ) );
             odomAftMapped.header.frame_id = "world";
             odomAftMapped.child_frame_id = "/aft_mapped";
-            odomAftMapped.header.stamp = ros::Time::now(); // ros::Time().fromSec(last_timestamp_lidar);
+            odomAftMapped.header.stamp = ros::Time().fromSec(Measures.lidar_end_time); //ros::Time::now(); // ros::Time().fromSec(last_timestamp_lidar);
             odomAftMapped.pose.pose.orientation.x = geoQuat.x;
             odomAftMapped.pose.pose.orientation.y = geoQuat.y;
             odomAftMapped.pose.pose.orientation.z = geoQuat.z;

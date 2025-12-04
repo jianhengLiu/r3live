@@ -52,6 +52,7 @@ Dr. Fu Zhang < fuzhang@hku.hk >.
 #include <iostream>
 #include <map>
 #include <mutex>
+#include <memory>
 #include <ostream>
 #include <sstream>
 #include <stdarg.h> //need for such like printf(...)
