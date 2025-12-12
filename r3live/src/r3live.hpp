@@ -208,7 +208,7 @@ public:
     ros::Subscriber sub_img, sub_img_comp;
 
     ros::Publisher pub_track_img, pub_raw_img;
-    ros::Publisher pub_odom_cam, pub_path_cam;
+    ros::Publisher pub_odom_cam, pub_odom_lidar, pub_path_cam;
     bool dense_map_en, flg_EKF_inited = 0, flg_map_initialized = 0, flg_EKF_converged = 0;
     int effect_feat_num = 0, frame_num = 0;
     double filter_size_corner_min, m_voxel_downsample_size_surf, filter_size_map_min, fov_deg, deltaT, deltaR, aver_time_consu = 0, frame_first_pt_time = 0;
@@ -327,6 +327,7 @@ public:
         pubPath = m_ros_node_handle.advertise<nav_msgs::Path>("/path", 10);
 
         pub_odom_cam = m_ros_node_handle.advertise<nav_msgs::Odometry>("/camera_odom", 10);
+        pub_odom_lidar = m_ros_node_handle.advertise<nav_msgs::Odometry>("/lidar_odom", 10);
         pub_path_cam = m_ros_node_handle.advertise<nav_msgs::Path>("/camera_path", 10);
         std::string LiDAR_pointcloud_topic, IMU_topic, IMAGE_topic, IMAGE_topic_compressed;
 

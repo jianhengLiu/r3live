@@ -1039,6 +1039,22 @@ int R3LIVE::service_LIO_update()
 
             pubOdomAftMapped.publish( odomAftMapped );
 
+            /******* Publish LiDAR Odometry ******/
+            nav_msgs::Odometry odomAftMappedLiDAR;
+            odomAftMappedLiDAR.header.frame_id = "world";
+            odomAftMappedLiDAR.child_frame_id = "/aft_mapped";
+            odomAftMappedLiDAR.header.stamp = ros::Time().fromSec( Measures.lidar_end_time );
+            odomAftMappedLiDAR.pose.pose.orientation.x = geoQuat.x;
+            odomAftMappedLiDAR.pose.pose.orientation.y = geoQuat.y;
+            odomAftMappedLiDAR.pose.pose.orientation.z = geoQuat.z;
+            odomAftMappedLiDAR.pose.pose.orientation.w = geoQuat.w;
+            // Transform position from IMU to LiDAR frame
+            Eigen::Vector3d pos_lidar = g_lio_state.pos_end + g_lio_state.rot_end * Lidar_offset_to_IMU;
+            odomAftMappedLiDAR.pose.pose.position.x = pos_lidar( 0 );
+            odomAftMappedLiDAR.pose.pose.position.y = pos_lidar( 1 );
+            odomAftMappedLiDAR.pose.pose.position.z = pos_lidar( 2 );
+            pub_odom_lidar.publish( odomAftMappedLiDAR );
+
             static tf::TransformBroadcaster br;
             tf::Transform                   transform;
             tf::Quaternion                  q;
