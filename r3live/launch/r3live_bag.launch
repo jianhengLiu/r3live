@@ -15,5 +15,5 @@
     </group>
 
 	
-	<node pkg="image_transport" type="republish" name="republish" args="compressed in:=/track_img raw out:=/track_img" output="screen" respawn="true"/>
+	<node pkg="image_transport" type="republish" name="republish" args="raw in:=/track_img raw compressed out:=/track_img/compressed" output="screen" respawn="true"/>
 </launch>
